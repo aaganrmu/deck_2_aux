@@ -14,5 +14,5 @@ cd lib
 localfiles=$(ls)
 for file in $localfiles; do
     echo "transfering lib/$file"
-    $(cp $file $DEVICE/lib/)
+    $(cp -r $file $DEVICE/lib/)
 done
