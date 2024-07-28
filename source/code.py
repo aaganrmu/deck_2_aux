@@ -8,12 +8,15 @@ from clockie import Clockie
 import digitalio
 import random
 import neopixel
+import displayio
 
 
 # setup default blinking led
 # led = digitalio.DigitalInOut(board.LED)
 # led.direction = digitalio.Direction.OUTPUT
 
+
+displayio.release_displays()
 i2c = busio.I2C(board.GP1, board.GP0)
 
 display = Display(i2c)
@@ -36,3 +39,4 @@ while True:
 
     pixel.fill(colour)
     pixel.show()
+    clockie.print_time()

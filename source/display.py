@@ -36,7 +36,6 @@ bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAA
 
 class Display():
     def __init__(self, i2c):
-        displayio.release_displays()
         display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
 
