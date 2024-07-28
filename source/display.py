@@ -1,6 +1,4 @@
 import adafruit_displayio_sh1106
-import board
-import busio
 import displayio
 import bitmaptools
 import terminalio
@@ -37,9 +35,8 @@ bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAA
 
 
 class Display():
-    def __init__(self):
+    def __init__(self, i2c):
         displayio.release_displays()
-        i2c = busio.I2C(board.GP1, board.GP0)
         display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
 
