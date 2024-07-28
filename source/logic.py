@@ -1,5 +1,5 @@
 
-from keys import Press
+from controls import Press
 
 
 class State():
