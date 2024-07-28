@@ -25,7 +25,9 @@ class Logic():
             state.mode -= 1
         if press.key == "down":
             state.mode += 1
-
+        if "toggle" in press.key:
+            state.mode = int(press.key[6:])
+            print(state.mode)
     @property
     def state(self):
         return self._state
