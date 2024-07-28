@@ -3,6 +3,7 @@ import time
 from display import Display
 from controls import Controls
 from logic import Logic
+from rtc import Rtc
 import digitalio
 import random
 import neopixel
@@ -14,7 +15,8 @@ led.direction = digitalio.Direction.OUTPUT
 display = Display()
 controls = Controls()
 logic = Logic()
-
+rtc = Rtc()
+ 
 pixel = neopixel.NeoPixel(board.GP2, 1, brightness=0.2, auto_write=False)
 
 colours = [(0,0,0), (255,0,0), (0,255,0), (0,0,255)]
