@@ -26,6 +26,4 @@ while True:
     event = controls.get_event()
     if event:
         logic.handle_event(event)
-
-    pixel.show()
     clockie.print_time()

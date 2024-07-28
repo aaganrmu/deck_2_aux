@@ -2,8 +2,7 @@ import board
 import digitalio
 import keypad
 
-KEYBINDS = {"up":18, "down":19, "enter":20, "back":21,
- "toggle0":10, "toggle1":11, "toggle2":12, "toggle3":13}
+KEYBINDS = {"up":26, "down":27, "enter":28, "back":29}
 
 class Press():
     def __init__(self, key, pressed=True):
