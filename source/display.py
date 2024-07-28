@@ -32,6 +32,9 @@ bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBA
 tab_inactive = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
 bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAABAQEBAQA=\n"))
 
+# Pre-render text
+
+
 
 class Display():
     def __init__(self):
