@@ -7,13 +7,8 @@ from logic import Logic
 from clockie import Clockie
 import digitalio
 import random
-import neopixel
 import displayio
 
-
-# setup default blinking led
-# led = digitalio.DigitalInOut(board.LED)
-# led.direction = digitalio.Direction.OUTPUT
 
 
 displayio.release_displays()
@@ -25,9 +20,6 @@ logic = Logic()
 clockie = Clockie(i2c)
 
  
-pixel = neopixel.NeoPixel(board.GP2, 1, brightness=0.2, auto_write=False)
-
-colours = [(0,0,0), (255,0,0), (0,255,0), (0,0,255)]
 
 while True:
     display.update_display(logic.state)
@@ -35,8 +27,5 @@ while True:
     if event:
         logic.handle_event(event)
 
-    colour = colours[logic.state.mode]
-
-    pixel.fill(colour)
     pixel.show()
     clockie.print_time()
