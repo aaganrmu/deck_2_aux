@@ -32,16 +32,6 @@ for image_file in image_files:
     print(name)
     images[name]=displayio.OnDiskBitmap(f"/images/{image_file}")
 
-def render_text(text):
-    output = displayio.group()
-    offset = 0
-    for character in text:
-        rendered_character = images[character]
-        grid = displayio.TileGrid(rendered_character, pixel_shader=palette, x=0, y=offset)
-        offset += rendered_character.width
-        output.append(grid)
-    return rendered_text
-
 class Display():
     def __init__(self, i2c):
         display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
@@ -57,7 +47,7 @@ class Display():
         tabs = displayio.Group()
         for i in range(0,4):
             if i == mode:
-                tab = images["a"]
+                tab = images["tab_active"]
             else:
                 tab = images["tab_inactive"]
             grid = displayio.TileGrid(tab, pixel_shader=palette, x=0, y=(TAB_HEIGHT)*i+1)
