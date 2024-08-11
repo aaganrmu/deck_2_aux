@@ -19,7 +19,7 @@ class Logic():
 
     def handle_event(self, press):
         if not press.pressed:
-            return
+            return false
         state = self._state
         if press.key == "up":
             state.mode -= 1
@@ -27,7 +27,8 @@ class Logic():
             state.mode += 1
         if "toggle" in press.key:
             state.mode = int(press.key[6:])
-            print(state.mode)
+        return true
+
     @property
     def state(self):
         return self._state

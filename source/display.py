@@ -2,6 +2,7 @@ import adafruit_displayio_sh1106
 import displayio
 import bitmaptools
 import terminalio
+import os
 from lib.adafruit_display_text import label
 from adafruit_binascii import a2b_base64 
 
@@ -20,19 +21,26 @@ palette[1] = 0xFFFFFF
 
 palette_inv = displayio.Palette(2)
 palette_inv[0] = 0xFFFFFF
-palette_inv[1] = 0x000000 
+palette_inv[1] = 0x000000
 
 
-# Pre-render tabs
-tab_active = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
-bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQA=\n"))
+# Load images
+image_files = os.listdir("/images")
+images = {}
+for image_file in image_files:
+    name = image_file[:-4]
+    print(name)
+    images[name]=displayio.OnDiskBitmap(f"/images/{image_file}")
 
-tab_inactive = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
-bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAABAQEBAQA=\n"))
-
-# Pre-render text
-
-
+def render_text(text):
+    output = displayio.group()
+    offset = 0
+    for character in text:
+        rendered_character = images[character]
+        grid = displayio.TileGrid(rendered_character, pixel_shader=palette, x=0, y=offset)
+        offset += rendered_character.width
+        output.append(grid)
+    return rendered_text
 
 class Display():
     def __init__(self, i2c):
@@ -42,15 +50,25 @@ class Display():
     def update_display(self, state):
         root = displayio.Group(x=MEM_OFFSET)
         root.append(self.tabs(state.mode))
+        root.append(self.content(state))
         self._display.root_group = root
 
     def tabs(self, mode):
         tabs = displayio.Group()
         for i in range(0,4):
             if i == mode:
-                tab = tab_active
+                tab = images["a"]
             else:
-                tab = tab_inactive
+                tab = images["tab_inactive"]
             grid = displayio.TileGrid(tab, pixel_shader=palette, x=0, y=(TAB_HEIGHT)*i+1)
             tabs.append(grid)
         return tabs
+
+
+
+    def content(self,state):
+        content = displayio.Group()
+        if state.mode == 0:
+            text = "aa"
+
+        return content

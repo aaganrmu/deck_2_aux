@@ -22,7 +22,7 @@ i2c = busio.I2C(board.GP1, board.GP0)
 display = Display(i2c)
 controls = Controls()
 logic = Logic()
-clockie = Clockie(i2c)
+# clockie = Clockie(i2c)
 
  
 pixel = neopixel.NeoPixel(board.GP2, 1, brightness=0.2, auto_write=False)
@@ -39,4 +39,4 @@ while True:
 
     pixel.fill(colour)
     pixel.show()
-    clockie.print_time()
+    # clockie.print_time()
