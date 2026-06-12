@@ -18,13 +18,15 @@ class Logic():
         self._state = State()
 
     def handle_event(self, press):
+        state = self._state
+        if press.key == "button0":
+            if press.pressed:
+                print("button0 pressed")
+            else:
+                print("button0 released")
+
         if not press.pressed:
             return
-        state = self._state
-        if press.key == "up":
-            state.mode -= 1
-        if press.key == "down":
-            state.mode += 1
         if "toggle" in press.key:
             state.mode = int(press.key[6:])
             print(state.mode)

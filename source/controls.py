@@ -2,8 +2,13 @@ import board
 import digitalio
 import keypad
 
-KEYBINDS = {"up":18, "down":19, "enter":20, "back":21,
- "toggle0":10, "toggle1":11, "toggle2":12, "toggle3":13}
+KEYBINDS = {
+    "button0":13, 
+    "toggle0":14,
+    "toggle1":15,
+    "toggle2":26,
+    "toggle3":27,
+    }
 
 class Press():
     def __init__(self, key, pressed=True):
@@ -15,7 +20,7 @@ class Controls():
         self._bindings, self._pins = zip(*KEYBINDS.items())
         self._keys = keypad.Keys(
         [getattr(board, f'GP{pin}') for pin in self._pins],
-        value_when_pressed=False,
+        value_when_pressed=True,
         pull=True,
         max_events=10
        )
