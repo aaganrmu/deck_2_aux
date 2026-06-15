@@ -19,6 +19,7 @@ class State():
     def button(self, button: bool):
         self._button = button
 
+
 class Logic():
     def __init__(self):
         self._state = State()
@@ -32,6 +33,7 @@ class Logic():
             return
         if "toggle" in press.key:
             state.mode = int(press.key[6:])
+    
     @property
     def state(self):
         return self._state

@@ -51,6 +51,7 @@ class Display():
         display_bus = I2CDisplayBus(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
 
+
     def update_display(self, state: State):
         current_palette = palette_inv if state.button else palette
        
@@ -59,11 +60,13 @@ class Display():
         root.append(self.tabs(current_palette, state.mode))
         self._display.root_group = root
 
-    def background(self, palette):
+
+    def background(self, palette: displayio.Palette):
         background = displayio.TileGrid(color_bitmap, pixel_shader=palette, x=0, y=0)
         return background
 
-    def tabs(self, palette, mode):
+
+    def tabs(self, palette: displayio.Palette, mode: int):
         tabs = displayio.Group()
         for i in range(0,4):
             if i == mode:
