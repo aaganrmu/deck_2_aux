@@ -11,3 +11,15 @@ Grey    Gnd     Gnd
 Purple  SCK     GP1 (I2C0)
 Blue    SDA     GP0 (I2C0)
 
+## Push button
+Colour  RP2040
+Red     13
+Brown   28
+
+## Selector
+Switch  rp2040
+Top     14
+Mid1    15
+Mid2    26
+Bot     27
+Common  28

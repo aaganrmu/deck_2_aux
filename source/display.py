@@ -2,15 +2,28 @@ import adafruit_displayio_sh1106
 import displayio
 import bitmaptools
 import terminalio
+from i2cdisplaybus import I2CDisplayBus 
 from lib.adafruit_display_text import label
-from adafruit_binascii import a2b_base64 
+from adafruit_binascii import a2b_base64
 
-# Display sizes
+
+from logic import State
+
+# Display layout:
+# Total display: 128 x 64
+# Left side: 5 x 64, 4 tabs, 16 pixels each
+# Main screen: 123 x 64
+# 
+#
+
+# Display settings
 WIDTH = 128
 HEIGHT = 64
+MEM_OFFSET = 2
+
+# Display tab settings
 TAB_HEIGHT = 16
 TAB_WIDTH = 4
-MEM_OFFSET = 2
 
 
 # Pre-define pallettes
@@ -30,21 +43,27 @@ bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBA
 tab_inactive = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
 bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAABAQEBAQA=\n"))
 
-# Pre-render text
-
-
+# single pixel:
+color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
 
 class Display():
-    def __init__(self, i2c):
-        display_bus = displayio.I2CDisplay(i2c, device_address=0x3C)
+    def __init__(self, i2c:I2CDisplayBus):
+        display_bus = I2CDisplayBus(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
 
-    def update_display(self, state):
+    def update_display(self, state: State):
+        current_palette = palette_inv if state.button else palette
+       
         root = displayio.Group(x=MEM_OFFSET)
-        root.append(self.tabs(state.mode))
+        root.append(self.background(current_palette))
+        root.append(self.tabs(current_palette, state.mode))
         self._display.root_group = root
 
-    def tabs(self, mode):
+    def background(self, palette):
+        background = displayio.TileGrid(color_bitmap, pixel_shader=palette, x=0, y=0)
+        return background
+
+    def tabs(self, palette, mode):
         tabs = displayio.Group()
         for i in range(0,4):
             if i == mode:
