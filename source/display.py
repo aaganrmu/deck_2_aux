@@ -37,12 +37,17 @@ palette_inv[1] = 0x000000
 
 
 # Pre-render tabs
-tab_active = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
-bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQA=\n"))
+# tab_active = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
+# bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQA=\n"))
 
-tab_inactive = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
-bitmaptools.arrayblit(tab_inactive, a2b_base64(b"AQEBAAAAAQEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAABAQEBAQA=\n"))
+tab_active, _ = adafruit_imageload.load(
+    "images/tab_active.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+)
 
+
+tab_inactive, _ = adafruit_imageload.load(
+    "images/tab_inactive.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+)
 # single pixel:
 color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
 
@@ -50,14 +55,18 @@ class Display():
     def __init__(self, i2c:I2CDisplayBus):
         display_bus = I2CDisplayBus(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
-
+        self._main_display_modes = [self.main_mode_0, self.main_mode_1, self.main_mode_2, self.main_mode_3]
 
     def update_display(self, state: State):
-        current_palette = palette_inv if state.button else palette
-       
+        if state.mode == 0:
+            current_palette = palette_inv if state.button else palette
+        else:
+            current_palette = palette
+            
         root = displayio.Group(x=MEM_OFFSET)
         root.append(self.background(current_palette))
-        root.append(self.tabs(current_palette, state.mode))
+        root.append(self.tabs(current_palette, state))
+        root.append(self.main_window(current_palette, state))
         self._display.root_group = root
 
 
@@ -66,13 +75,39 @@ class Display():
         return background
 
 
-    def tabs(self, palette: displayio.Palette, mode: int):
+    def tabs(self, palette: displayio.Palette, state: State):
         tabs = displayio.Group()
         for i in range(0,4):
-            if i == mode:
+            if i == state.mode:
                 tab = tab_active
             else:
                 tab = tab_inactive
             grid = displayio.TileGrid(tab, pixel_shader=palette, x=0, y=(TAB_HEIGHT)*i+1)
             tabs.append(grid)
         return tabs
+        
+    def main_window(self, palette: displayio.Palette, state: State):
+        main_window = displayio.Group()
+        main_window.append(self._main_display_modes[state.mode](palette, state))
+        return main_window
+    
+    def main_mode_0(self, pallette: displayio.Palette, state: State):
+        text = "Mode 0: inverted" if state.button else "Mode 0: normal"
+        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
+        return text_area
+
+    def main_mode_1(self, pallette: displayio.Palette, state: State):
+        text = "Button pressed" if state.button else "Button released"
+        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
+        return text_area
+
+    def main_mode_2(self, pallette: displayio.Palette, state: State):
+        text = "Mode 2"
+        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
+        return text_area
+    
+    def main_mode_3(self, pallette: displayio.Palette, state: State):
+        text = "Mode 3"
+        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
+        return text_area
+    

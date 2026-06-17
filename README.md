@@ -23,3 +23,9 @@ Mid1    15
 Mid2    26
 Bot     27
 Common  28
+
+# Making images
+Gimp:
+Image -> Mode -> Indexed -> Use black and white (1-bit_ palette)
+Export
+16 bit (R5G6B5)
