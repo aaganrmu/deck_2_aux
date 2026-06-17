@@ -44,7 +44,6 @@ colours = [(255,0,0), (0,255,0), (0,0,255), (0,0,0)]
 
 while True:
     display.update_display(logic.state)
-    print(f"Error updating display: {e}")
 
     event = controls.get_event()
     if event:

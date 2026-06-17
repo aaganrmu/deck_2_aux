@@ -5,7 +5,7 @@ import terminalio
 from i2cdisplaybus import I2CDisplayBus 
 from lib.adafruit_display_text import label
 from adafruit_binascii import a2b_base64
-
+import adafruit_imageload
 
 from logic import State
 
