@@ -1,12 +1,14 @@
+from random import randint
+
 import adafruit_displayio_sh1106
+import adafruit_imageload
 import busio
 import displayio
-import bitmaptools
 import terminalio
+import vectorio
 from i2cdisplaybus import I2CDisplayBus 
 from lib.adafruit_display_text import label
 from adafruit_binascii import a2b_base64
-import adafruit_imageload
 
 from logic import State
 
@@ -55,15 +57,16 @@ class Display():
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
         self._main_display_modes = [self.main_mode_0, self.main_mode_1, self.main_mode_2, self.main_mode_3]
 
+        self._mode_2_polygon = None
     def update_display(self, state: State):
-        if state.mode == 0:
+        if state.mode == 3:
             current_palette = palette_inv if state.button else palette
         else:
             current_palette = palette
             
         root = displayio.Group(x=MEM_OFFSET)
         root.append(self.background(current_palette))
-        root.append(self.tabs(current_palette, state))
+        root.append(self.tabs(state))
         root.append(self.main_window(current_palette, state))
         self._display.root_group = root
 
@@ -73,7 +76,7 @@ class Display():
         return background
 
 
-    def tabs(self, palette: displayio.Palette, state: State):
+    def tabs(self, state: State):
         tabs = displayio.Group()
         for i in range(0,4):
             if i == state.mode:
@@ -85,14 +88,21 @@ class Display():
         return tabs
         
     def main_window(self, palette: displayio.Palette, state: State):
-        main_window = displayio.Group()
+        main_window = displayio.Group(x=4, y=0)
         main_window.append(self._main_display_modes[state.mode](palette, state))
         return main_window
     
     def main_mode_0(self, pallette: displayio.Palette, state: State):
-        text = "Mode 0: inverted" if state.button else "Mode 0: normal"
-        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
-        return text_area
+        face = displayio.Group()
+        parts = self.create_face_parts(state)
+        for part in parts:
+            line = vectorio.Polygon(
+                pixel_shader=pallette,
+                points=part["vertices"],
+                color_index=part["colour"],
+            )
+            face.append(line)
+        return face
 
     def main_mode_1(self, pallette: displayio.Palette, state: State):
         text = "Button pressed" if state.button else "Button released"
@@ -100,12 +110,50 @@ class Display():
         return text_area
 
     def main_mode_2(self, pallette: displayio.Palette, state: State):
-        text = "Mode 2"
-        text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
-        return text_area
+        if self._mode_2_polygon is None or state.button:
+            self._mode_2_polygon = [(randint(0,123), randint(0,64)) for x in range(0, 3)]
+        line = vectorio.Polygon(
+                pixel_shader=pallette,
+                points=self._mode_2_polygon,
+                color_index=1,
+            )
+        return line
     
     def main_mode_3(self, pallette: displayio.Palette, state: State):
-        text = "Mode 3"
+        text = "Mode 3: inverted" if state.button else "Mode 0: normal"
         text_area = label.Label(terminalio.FONT, text=text, color=pallette[1], x=10, y=30)
         return text_area
     
+    def create_face_parts(self, state: State):
+        left_eye = {
+            "vertices": [(30, 10), (40, 10), (40, 20), (30, 20)],
+            "colour": 1
+        }
+        right_eye = {
+            "vertices": [(80, 10), (90, 10), (90, 20), (80, 20)],
+            "colour": 1
+        }
+        
+        if state.button:
+            offset_x = randint(-2, 2)
+            offset_y = randint(-2, 2)
+            mouth = [
+                {
+                    "vertices": [(30 + offset_x, 30 + offset_y), (90 + offset_x, 30 + offset_y), (90 + offset_x, 60 + offset_y), (30 + offset_x, 60 + offset_y)],
+                    "colour": 1
+                },
+                {
+                    "vertices": [(40 + offset_x, 40 + offset_y), (80 + offset_x, 40 + offset_y), (80 + offset_x, 50 + offset_y), (40 + offset_x, 50 + offset_y)],
+                    "colour": 0
+                }
+            ]
+            
+        else:
+            mouth = [
+                {
+                    "vertices": [(30, 40), (90, 40), (90, 50), (30, 50)],
+                    "colour": 1
+                }
+            ]
+        
+        return [left_eye, right_eye] + mouth
