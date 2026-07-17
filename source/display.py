@@ -35,19 +35,14 @@ palette_inv = displayio.Palette(2)
 palette_inv[0] = 0xFFFFFF
 palette_inv[1] = 0x000000 
 
-
-# Pre-render tabs
-# tab_active = displayio.Bitmap(TAB_WIDTH, TAB_HEIGHT-2, 2)
-# bitmaptools.arrayblit(tab_active, a2b_base64(b"AQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQA=\n"))
-
-tab_active, _ = adafruit_imageload.load(
-    "images/tab_active.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+tab_active, palette_png = adafruit_imageload.load(
+    "images/tab_active.png", bitmap=displayio.Bitmap, palette=displayio.Palette
 )
-
 
 tab_inactive, _ = adafruit_imageload.load(
-    "images/tab_inactive.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+    "images/tab_inactive.png", bitmap=displayio.Bitmap, palette=displayio.Palette
 )
+
 # single pixel:
 color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
 
@@ -85,7 +80,7 @@ class Display():
                 tab = tab_active
             else:
                 tab = tab_inactive
-            grid = displayio.TileGrid(tab, pixel_shader=palette, x=0, y=(TAB_HEIGHT)*i+1)
+            grid = displayio.TileGrid(tab, pixel_shader=palette_png, x=0, y=(TAB_HEIGHT)*i+1)
             tabs.append(grid)
         return tabs
         
