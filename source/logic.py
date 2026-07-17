@@ -10,13 +10,15 @@ class State():
         return self._mode
     @mode.setter
     def mode(self, mode: int):
+        print(f"Setting mode to {mode}")
         self._mode = mode %4
 
     @property
     def button(self):
-        return self._button    
+        return self._button
     @button.setter
     def button(self, button: bool):
+        print(f"Setting button to {button}")
         self._button = button
 
 

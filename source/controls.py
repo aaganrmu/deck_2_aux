@@ -1,4 +1,5 @@
 import board
+import digitalio
 import keypad
 
 class Press():
@@ -7,7 +8,13 @@ class Press():
         self.pressed = pressed
 
 class Controls():
-    def __init__(self, keybinds: dict[str, int] = {}):
+    def __init__(self, keybinds: dict[str, int] = {}, high_pin: board.Pin = None):
+
+        if high_pin is not None:
+            pin_common = digitalio.DigitalInOut(high_pin)
+            pin_common.direction = digitalio.Direction.OUTPUT
+            pin_common.value = True
+            
         self._bindings, self._pins = zip(*keybinds.items())
         self._keys = keypad.Keys(
         [getattr(board, f'GP{pin}') for pin in self._pins],

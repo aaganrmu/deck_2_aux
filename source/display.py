@@ -1,4 +1,5 @@
 import adafruit_displayio_sh1106
+import busio
 import displayio
 import bitmaptools
 import terminalio
@@ -14,7 +15,6 @@ from logic import State
 # Left side: 5 x 64, 4 tabs, 16 pixels each
 # Main screen: 123 x 64
 # 
-#
 
 # Display settings
 WIDTH = 128
@@ -52,7 +52,10 @@ tab_inactive, _ = adafruit_imageload.load(
 color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
 
 class Display():
-    def __init__(self, i2c:I2CDisplayBus):
+    def __init__(self, clk_pin, sda_pin):
+        displayio.release_displays()
+        i2c = busio.I2C(clk_pin, sda_pin, frequency=1000000)
+
         display_bus = I2CDisplayBus(i2c, device_address=0x3C)
         self._display = adafruit_displayio_sh1106.SH1106(display_bus, width=WIDTH+MEM_OFFSET, height=HEIGHT)
         self._main_display_modes = [self.main_mode_0, self.main_mode_1, self.main_mode_2, self.main_mode_3]
